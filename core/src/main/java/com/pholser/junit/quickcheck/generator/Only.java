@@ -23,22 +23,16 @@
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.pholser.junit.quickcheck.internal;
+package com.pholser.junit.quickcheck.generator;
 
-import java.util.List;
-import java.util.stream.Stream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import com.pholser.junit.quickcheck.generator.Generator;
-import com.pholser.junit.quickcheck.internal.generator.GeneratorRepository;
-import com.pholser.junit.quickcheck.internal.generator.PropertyParameterGenerationContext;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
-public interface ParameterSampler {
-    int sizeFactor(ParameterTypeContext p);
-
-    Stream<List<SeededValue>> sample(
-        List<PropertyParameterGenerationContext> parameters);
-
-    default Generator<?> decideGenerator(GeneratorRepository repository, ParameterTypeContext p) {
-        return repository.produceGenerator(p);
-    }
+@Target({ PARAMETER, FIELD, ANNOTATION_TYPE, TYPE_USE })
+@Retention(RUNTIME)
+public @interface Only {
+    String[] value();
 }

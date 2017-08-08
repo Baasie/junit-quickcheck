@@ -25,7 +25,6 @@
 
 package com.pholser.junit.quickcheck.runner.sampling;
 
-import java.lang.reflect.Parameter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -33,6 +32,7 @@ import java.util.stream.StreamSupport;
 
 import com.pholser.junit.quickcheck.internal.CartesianIterator;
 import com.pholser.junit.quickcheck.internal.ParameterSampler;
+import com.pholser.junit.quickcheck.internal.ParameterTypeContext;
 import com.pholser.junit.quickcheck.internal.SeededValue;
 import com.pholser.junit.quickcheck.internal.generator.PropertyParameterGenerationContext;
 
@@ -45,7 +45,7 @@ public class ExhaustiveParameterSampler implements ParameterSampler {
         this.sizeFactor = sizeFactor;
     }
 
-    @Override public int sizeFactor(Parameter p) {
+    @Override public int sizeFactor(ParameterTypeContext p) {
         return sizeFactor;
     }
 

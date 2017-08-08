@@ -25,13 +25,19 @@
 
 package com.pholser.junit.quickcheck.runner.sampling;
 
-import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.pholser.junit.quickcheck.generator.Generator;
+import com.pholser.junit.quickcheck.generator.Only;
 import com.pholser.junit.quickcheck.internal.ParameterSampler;
+import com.pholser.junit.quickcheck.internal.ParameterTypeContext;
 import com.pholser.junit.quickcheck.internal.SeededValue;
+import com.pholser.junit.quickcheck.internal.conversion.StringConversion;
+import com.pholser.junit.quickcheck.internal.generator.GeneratorRepository;
 import com.pholser.junit.quickcheck.internal.generator.PropertyParameterGenerationContext;
+import com.pholser.junit.quickcheck.internal.generator.SamplingDomainGenerator;
 
 import static java.util.stream.Collectors.*;
 
@@ -42,7 +48,7 @@ public class TupleParameterSampler implements ParameterSampler {
         this.trials = trials;
     }
 
-    @Override public int sizeFactor(Parameter p) {
+    @Override public int sizeFactor(ParameterTypeContext p) {
         return trials;
     }
 
@@ -55,5 +61,22 @@ public class TupleParameterSampler implements ParameterSampler {
                     .map(SeededValue::new)
                     .collect(toList()));
         return tupleStream.limit(trials);
+    }
+
+    @Override public Generator<?> decideGenerator(
+        GeneratorRepository repository,
+        ParameterTypeContext p) {
+
+        Only only = p.annotatedType().getAnnotation(Only.class);
+        if (only != null) {
+            StringConversion conversion = StringConversion.to(p.getRawClass());
+            List<Object> values =
+                Arrays.stream(only.value())
+                    .map(conversion::convert)
+                    .collect(toList());
+            return new SamplingDomainGenerator(values);
+        }
+
+        return repository.produceGenerator(p);
     }
 }

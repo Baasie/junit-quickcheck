@@ -217,7 +217,7 @@ public class GeneratorRepository implements Generators {
         return new GeneratorRepository(random, this.generators);
     }
 
-    Generator<?> produceGenerator(ParameterTypeContext parameter) {
+    public Generator<?> produceGenerator(ParameterTypeContext parameter) {
         Generator<?> generator = generatorFor(parameter);
         generator.provide(this);
         generator.configure(parameter.annotatedType());
