@@ -28,6 +28,8 @@ package com.pholser.junit.quickcheck.generator;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.pholser.junit.quickcheck.conversion.StringConversion;
+
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
@@ -35,4 +37,6 @@ import static java.lang.annotation.RetentionPolicy.*;
 @Retention(RUNTIME)
 public @interface Only {
     String[] value();
+
+    Class<? extends StringConversion> by() default StringConversion.class;
 }

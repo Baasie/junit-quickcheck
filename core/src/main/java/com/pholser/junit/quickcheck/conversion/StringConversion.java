@@ -23,26 +23,9 @@
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.pholser.junit.quickcheck.internal.conversion;
+package com.pholser.junit.quickcheck.conversion;
 
-import java.lang.reflect.Constructor;
-
-import com.pholser.junit.quickcheck.conversion.StringConversion;
-
-import static com.pholser.junit.quickcheck.internal.Reflection.*;
-
-public class ConstructorInvokingStringConversion implements StringConversion {
-    private final Constructor<?> ctor;
-
-    public ConstructorInvokingStringConversion(Constructor<?> ctor) {
-        this.ctor = ctor;
-    }
-
-    @Override public Object convert(String raw) {
-        try {
-            return ctor.newInstance(raw);
-        } catch (Exception ex) {
-            throw reflectionException(ex);
-        }
-    }
+@FunctionalInterface
+public interface StringConversion {
+    Object convert(String raw);
 }

@@ -126,12 +126,6 @@ public class GeneratorRepository implements Generators {
         Class<?>... argumentTypes) {
 
         Constructor<U> constructor = findConstructor(type, argumentTypes);
-        if (constructor == null) {
-            throw new IllegalArgumentException(
-                "No constructor found for " + type
-                    + " with argument types " + asList(argumentTypes));
-        }
-
         Ctor<U> ctor = new Ctor<>(constructor);
         ctor.provide(this);
         ctor.configure(constructor.getAnnotatedReturnType());

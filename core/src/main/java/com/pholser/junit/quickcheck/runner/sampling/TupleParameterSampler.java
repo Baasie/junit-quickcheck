@@ -34,11 +34,13 @@ import com.pholser.junit.quickcheck.generator.Only;
 import com.pholser.junit.quickcheck.internal.ParameterSampler;
 import com.pholser.junit.quickcheck.internal.ParameterTypeContext;
 import com.pholser.junit.quickcheck.internal.SeededValue;
-import com.pholser.junit.quickcheck.internal.conversion.StringConversion;
+import com.pholser.junit.quickcheck.conversion.StringConversion;
+import com.pholser.junit.quickcheck.internal.conversion.StringConversions;
 import com.pholser.junit.quickcheck.internal.generator.GeneratorRepository;
 import com.pholser.junit.quickcheck.internal.generator.PropertyParameterGenerationContext;
 import com.pholser.junit.quickcheck.internal.generator.SamplingDomainGenerator;
 
+import static com.pholser.junit.quickcheck.internal.Reflection.*;
 import static java.util.stream.Collectors.*;
 
 public class TupleParameterSampler implements ParameterSampler {
@@ -69,7 +71,7 @@ public class TupleParameterSampler implements ParameterSampler {
 
         Only only = p.annotatedType().getAnnotation(Only.class);
         if (only != null) {
-            StringConversion conversion = StringConversion.to(p.getRawClass());
+            StringConversion conversion = decideConversion(p, only);
             List<Object> values =
                 Arrays.stream(only.value())
                     .map(conversion::convert)
@@ -78,5 +80,11 @@ public class TupleParameterSampler implements ParameterSampler {
         }
 
         return repository.produceGenerator(p);
+    }
+
+    private StringConversion decideConversion(ParameterTypeContext p, Only only) {
+        return only.by().equals(defaultValueOf(Only.class, "by"))
+            ? StringConversions.to(p.getRawClass())
+            : instantiate(only.by());
     }
 }

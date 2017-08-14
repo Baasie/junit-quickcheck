@@ -25,14 +25,24 @@
 
 package com.pholser.junit.quickcheck.internal.conversion;
 
+import java.lang.reflect.Method;
+
+import com.pholser.junit.quickcheck.conversion.StringConversion;
+
 import static com.pholser.junit.quickcheck.internal.Reflection.*;
 
-@FunctionalInterface
-public interface StringConversion {
-    Object convert(String raw);
+public class MethodInvokingStringConversion implements StringConversion {
+    private final Method method;
 
-    static StringConversion to(Class<?> clazz) {
-        return new ConstructorInvokingStringConversion(
-            findConstructor(maybeWrap(clazz), String.class));
+    public MethodInvokingStringConversion(Method method) {
+        this.method = method;
+    }
+
+    @Override public Object convert(String raw) {
+        try {
+            return method.invoke(null, raw);
+        } catch (Exception ex) {
+            throw reflectionException(ex);
+        }
     }
 }

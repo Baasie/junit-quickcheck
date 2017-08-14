@@ -78,8 +78,8 @@ public final class Reflection {
     public static <T> Constructor<T> findConstructor(Class<T> type, Class<?>... parameterTypes) {
         try {
             return type.getConstructor(parameterTypes);
-        } catch (NoSuchMethodException ex) {
-            return null;
+        } catch (Exception ex) {
+            throw reflectionException(ex);
         }
     }
 

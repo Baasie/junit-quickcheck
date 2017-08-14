@@ -25,24 +25,48 @@
 
 package com.pholser.junit.quickcheck.internal.conversion;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import com.pholser.junit.quickcheck.conversion.StringConversion;
+import com.pholser.junit.quickcheck.internal.ReflectionException;
 
 import static com.pholser.junit.quickcheck.internal.Reflection.*;
 
-public class ConstructorInvokingStringConversion implements StringConversion {
-    private final Constructor<?> ctor;
-
-    public ConstructorInvokingStringConversion(Constructor<?> ctor) {
-        this.ctor = ctor;
+public final class StringConversions {
+    private StringConversions() {
+        throw new UnsupportedOperationException();
     }
 
-    @Override public Object convert(String raw) {
+    public static StringConversion to(Class<?> clazz) {
+        Class<?> wrapped = maybeWrap(clazz);
+
         try {
-            return ctor.newInstance(raw);
-        } catch (Exception ex) {
-            throw reflectionException(ex);
+            Method method = findMethod(clazz, "valueOf", String.class);
+            if (Modifier.isStatic(method.getModifiers())
+                && wrapped.equals(method.getReturnType())) {
+
+                return new MethodInvokingStringConversion(method);
+            }
+        } catch (ReflectionException reserveJudgment) {
+            // fall back to other means of conversion
         }
+
+        if (Character.class.equals(wrapped))
+            return characterConversion(clazz);
+
+        return new ConstructorInvokingStringConversion(
+            findConstructor(wrapped, String.class));
+    }
+
+    private static StringConversion characterConversion(Class<?> clazz) {
+        return raw -> {
+            if (raw.length() > 1) {
+                throw new IllegalArgumentException(
+                    "Cannot convert " + raw + " into an instance of " + clazz);
+            }
+
+            return raw.charAt(0);
+        };
     }
 }
