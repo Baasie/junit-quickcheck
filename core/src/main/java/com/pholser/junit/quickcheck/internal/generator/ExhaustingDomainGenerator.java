@@ -25,24 +25,23 @@
 
 package com.pholser.junit.quickcheck.internal.generator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 
-public class SamplingDomainGenerator extends Generator<Object> {
-    private final List<?> items;
+public class ExhaustingDomainGenerator extends Generator<Object> {
+    private final Iterator<?> items;
 
-    public SamplingDomainGenerator(Set<?> items) {
+    public ExhaustingDomainGenerator(Set<?> items) {
         super(Object.class);
 
-        this.items = new ArrayList<>(items);
+        this.items = items.iterator();
     }
 
     @Override public Object generate(SourceOfRandomness random, GenerationStatus status) {
-        return random.choose(items);
+        return items.next();
     }
 }

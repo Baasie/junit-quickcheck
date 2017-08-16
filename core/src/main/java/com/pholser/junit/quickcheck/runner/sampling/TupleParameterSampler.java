@@ -27,6 +27,7 @@ package com.pholser.junit.quickcheck.runner.sampling;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.pholser.junit.quickcheck.generator.Generator;
@@ -72,10 +73,10 @@ public class TupleParameterSampler implements ParameterSampler {
         Only only = p.annotatedType().getAnnotation(Only.class);
         if (only != null) {
             StringConversion conversion = decideConversion(p, only);
-            List<Object> values =
+            Set<Object> values =
                 Arrays.stream(only.value())
                     .map(conversion::convert)
-                    .collect(toList());
+                    .collect(toSet());
             return new SamplingDomainGenerator(values);
         }
 

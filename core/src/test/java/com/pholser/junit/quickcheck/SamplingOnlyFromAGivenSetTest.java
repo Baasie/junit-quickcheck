@@ -28,7 +28,6 @@ package com.pholser.junit.quickcheck;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
@@ -49,7 +48,7 @@ import static org.junit.Assert.*;
 import static org.junit.experimental.results.PrintableResult.*;
 import static org.junit.experimental.results.ResultMatchers.*;
 
-public class ChoosingTuplesOnlyFromAGivenSetTest {
+public class SamplingOnlyFromAGivenSetTest {
     @Test public void primitiveBooleans() throws Exception {
         assertThat(testResult(PrimitiveBooleans.class), isSuccessful());
         assertEquals(defaultPropertyTrialCount(), PrimitiveBooleans.iterations);
@@ -488,6 +487,28 @@ public class ChoosingTuplesOnlyFromAGivenSetTest {
             @Only(value = {"2017/01/01", "2001/12/25"}, by = YYYYMMDD.class) LocalDate d) {
 
             assertTrue(candidates.contains(d));
+            ++iterations;
+        }
+    }
+
+    @Test public void manyParameters() throws Exception {
+        assertThat(testResult(ManyParameters.class), isSuccessful());
+        assertEquals(defaultPropertyTrialCount(), ManyParameters.iterations);
+    }
+
+    @RunWith(JUnitQuickcheck.class)
+    public static class ManyParameters {
+        static int iterations;
+
+        private static final Set<Integer> firstCandidates = new HashSet<>(asList(-1, -2, -4));
+        private static final Set<Character> secondCandidates = new HashSet<>(asList('r', 'y'));
+
+        @Property public void shouldHold(
+            @Only({"-1", "-2", "-4"}) int i,
+            @Only({"r", "y"}) char ch) {
+
+            assertTrue(firstCandidates.contains(i));
+            assertTrue(secondCandidates.contains(ch));
             ++iterations;
         }
     }
